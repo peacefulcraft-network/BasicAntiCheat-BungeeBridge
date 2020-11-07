@@ -9,6 +9,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -19,13 +21,17 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
 
-public class BACBungee extends Plugin implements Listener
-{
+public class BACBungee extends Plugin implements Listener {
+
+    private HashMap<String, Boolean> handledPunishments;
+
     public void onEnable() {
         getProxy().getPluginManager().registerListener((Plugin)this, (Listener)this);
         getProxy().registerChannel("BAC:BACPunish".toLowerCase());
         getProxy().registerChannel("BAC:BACAlert".toLowerCase());
         getProxy().getConsole().sendMessage((BaseComponent)new TextComponent("§a[BACBungee] Registered 2 message listeners across " + getProxy().getServers().size() + " linked servers."));
+    
+        this.handledPunishments = new HashMap<String, Boolean>();
     }
     
     @EventHandler
@@ -39,7 +45,21 @@ public class BACBungee extends Plugin implements Listener
         if (e.getTag().equals("bac:bacpunish")) {
             try {
                 final String cmd = in.readUTF();
-                getProxy().getPluginManager().dispatchCommand(getProxy().getConsole(), cmd);
+
+                // The MC servers tend to spam punishment commands. If we've already been notified of this punishment, don't execute the command again.
+                if (!handledPunishments.containsKey(cmd)) {
+                    getProxy().getPluginManager().dispatchCommand(getProxy().getConsole(), cmd);
+                    handledPunishments.put(cmd, true);
+
+                    // Allow same punishment to be submitted again after 3 seconds.
+                    getProxy().getScheduler().schedule(this, () -> {
+                        handledPunishments.remove(cmd);
+                        getProxy().getConsole().sendMessage((BaseComponent)new TextComponent("§c§lPunishmnet command timeout has lapsed. Removing from handled map"));
+                    }, 3L, TimeUnit.SECONDS);
+                } else {
+                    getProxy().getConsole().sendMessage((BaseComponent)new TextComponent("§c§lIgnoring duplicate punishment command " + cmd));
+                }
+                
             }
             catch (IOException e2) {
                 getProxy().getConsole().sendMessage((BaseComponent)new TextComponent("§c§lThere was an error reading the message from Basic Anti-Cheat [Ch: BACPunish] from '" + srv.getName() + "'"));

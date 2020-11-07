@@ -5,7 +5,7 @@
 	<name>BasicAntiCheat</name>
 	<url>peacefulcraft.net</url>
 	<groupId>net.peacefulcraft.adm</groupId>
-	<artifactId>BasicAntiCheat</artifactId>
+	<artifactId>BasicAntiCheat-Bungeecord-Bridge</artifactId>
 	<version>1.2.2</version>
 	<packaging>jar</packaging>
 	<description>Bukkit Plugin Developed by McJinky, modifed by the PeacefulCraft Network</description>

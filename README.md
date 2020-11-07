@@ -1,1 +1,2 @@
 # BasicAntiCheat-BungeeBridge
+This is a micro-plugin, meant to be used in conjuction with [BasicAntiCheat](https://github.com/peacefulcraft-network/BasicAntiCheat). BasicAntiCheat and this Bungeecord addon were not orignally developed by the PeacefuLCraft Network. This addon plugin was decompiled from the JAR distributed by [MC-Jinky](https://github.com/MC-Jinky).

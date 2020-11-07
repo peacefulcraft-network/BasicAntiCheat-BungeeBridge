@@ -1,0 +1,7 @@
+*.class
+bin/
+.settings/
+.classpath
+.project
+README.md
+target/
